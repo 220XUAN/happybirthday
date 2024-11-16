@@ -1,0 +1,56 @@
+<!-- MusicPlayer.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+</head>
+<body>
+    <audio id="backgroundMusic" loop autoplay>
+        <source src="../music/3.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+	
+	<script>
+        const audio = document.getElementById("backgroundMusic");
+    
+        // 检查 sessionStorage 中的标记，是否是首次加载
+        const isFirstLoad = sessionStorage.getItem("firstLoad");
+    
+        if (!isFirstLoad) {
+            // 强制让音乐从头开始播放
+            audio.currentTime = 0;
+    
+            // 设置标记，确保只执行一次
+            sessionStorage.setItem("firstLoad", "true");
+    
+            // 如果之前的播放状态是正在播放，则继续播放
+            audio.play().catch((error) => {
+                console.log("播放音乐时发生错误：" + error);
+            });
+        } else {
+            // 不是首次加载时，可以恢复上次的播放位置
+            const savedTime = localStorage.getItem("musicTime");
+            const isPlaying = localStorage.getItem("musicPlaying");
+    
+            if (savedTime) {
+                audio.currentTime = parseFloat(savedTime); // 恢复播放时间
+            }
+    
+            if (isPlaying === "true") {
+                audio.play().catch((error) => {
+                    console.log("播放音乐时发生错误：" + error);
+                });
+            }
+        }
+    
+        // 页面离开前保存音乐状态
+        window.addEventListener("beforeunload", () => {
+            localStorage.setItem("musicTime", audio.currentTime); // 保存当前播放时间
+            localStorage.setItem("musicPlaying", !audio.paused); // 保存播放状态
+        });
+    </script>
+    
+</body>
+</html>
